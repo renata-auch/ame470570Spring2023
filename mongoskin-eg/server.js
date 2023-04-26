@@ -1,9 +1,11 @@
 var mongo = require('mongoskin');
-var db = mongo.db("mongodb://44.203.237.16:27017/testdb");
+var db = mongo.db("mongodb://3.101.191.42:27017/testdb");
 
+/*
 db.collection('user').find().toArray(function(err, result) {
   console.log(result);
 });
+*/
 
 var express = require("express");
 var server = express();
@@ -24,44 +26,79 @@ server.get("/add", function (req, res) {
     var b = parseFloat(req.query.b);
     res.send((a+b).toString()); // send response body
   });
-
-
 });
 
 server.get("/sub", function (req, res) {
   console.log(req.query);
+  req.query.op = "sub";
+  req.query.time = new Date().getTime();
+  db.collection("data").insert(req.query, function(err, result) {
     var a = parseFloat(req.query.a);
     var b = parseFloat(req.query.b);
     res.send((a-b).toString()); // send response body
+  });
 });
 
 server.get("/mul", function (req, res) {
   console.log(req.query);
+  req.query.op = "mul";
+  req.query.time = new Date().getTime();
+  db.collection("data").insert(req.query, function(err, result) {
     var a = parseFloat(req.query.a);
     var b = parseFloat(req.query.b);
     res.send((a*b).toString()); // send response body
+
+  });
 });
 
 server.get("/div", function (req, res) {
   console.log(req.query);
+  req.query.op = "div";
+  req.query.time = new Date().getTime();
+  db.collection("data").insert(req.query, function(err, result) {
     var a = parseFloat(req.query.a);
     var b = parseFloat(req.query.b);
     res.send((a/b).toString()); // send response body
+  });
 });
 
 server.get("/mod", function (req, res) {
   console.log(req.query);
+  req.query.op = "mod";
+  req.query.time = new Date().getTime();
+  db.collection("data").insert(req.query, function(err, result) {
     var a = parseFloat(req.query.a);
     var b = parseFloat(req.query.b);
     res.send((a%b).toString()); // send response body
+  });
 });
 
 
 server.get("/pow", function (req, res) {
   console.log(req.query);
+  req.query.op = "pow";
+  req.query.time = new Date().getTime();
+  db.collection("data").insert(req.query, function(err, result) {
     var a = parseFloat(req.query.a);
     var b = parseFloat(req.query.b);
     res.send((a**b).toString()); // send response body
+  });
+});
+
+
+server.get("/history", function (req, res) {
+  db.collection("data").find().sort({time:-1}).toArray(function(err, result) {
+    res.send(result);
+  });
+});
+
+server.get("/delete", function (req, res) {
+  var id = req.query.id;
+  console.log(typeof id, id)
+  db.collection("data").remove({_id: mongo.helper.toObjectID(id)}, function(err, result) {
+    console.log(err);
+    res.send("Deleted");
+  });
 });
 
 server.use(methodOverride());
